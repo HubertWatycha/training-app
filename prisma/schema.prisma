@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int        @id @default(autoincrement())
+  name           String?
+  email          String?    @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  accounts       Account[]
+  Session        Session[]
+  chosenShoes    Shoe[]     @relation("UserShoe")
+  chosenT_Shirts T_Shirt[]  @relation("UserT_Shirt")
+  chosenTrousers Trousers[] @relation("UserTrousers")
+  chosenShorts   Shorts[]   @relation("UserShorts")
+  chosenHoodies  Hoodies[]  @relation("UserHoodies")
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Shoe {
+  id          Int      @id @default(autoincrement())
+  size        Int
+  image       String   @unique
+  category    String
+  price_range Int
+  gender      String
+  color       String
+  used        Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chosenBy    User[]   @relation("UserShoe")
+}
+
+model T_Shirt {
+  id          Int      @id @default(autoincrement())
+  size        String
+  image       String   @unique
+  category    String
+  price_range Int
+  gender      String
+  color       String
+  used        Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chosenBy    User[]   @relation("UserT_Shirt")
+}
+
+model Trousers {
+  id          Int      @id @default(autoincrement())
+  size        String
+  image       String   @unique
+  category    String
+  price_range Int
+  gender      String
+  color       String
+  used        Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chosenBy    User[]   @relation("UserTrousers")
+}
+
+model Shorts {
+  id          Int      @id @default(autoincrement())
+  size        String
+  image       String   @unique
+  category    String
+  price_range Int
+  gender      String
+  color       String
+  used        Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chosenBy    User[]   @relation("UserShorts")
+}
+
+model Hoodies {
+  id          Int      @id @default(autoincrement())
+  size        String
+  image       String   @unique
+  category    String
+  price_range Int
+  gender      String
+  color       String
+  used        Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chosenBy    User[]   @relation("UserHoodies")
+}
