@@ -1,7 +1,9 @@
 'use client';
 
-import Header from '@/training-app/app/(components)/header';
-import Sidebar from '@/training-app/app/(components)/sidebar';
+import Header from '@/app/(components)/header';
+import Sidebar from '@/app/(components)/sidebar';
+import { signOut } from 'next-auth/react';
+import router from 'next/navigation';
 import React, { createContext, useContext, useState } from 'react';
 
 const ClothingContext = createContext<{
@@ -43,13 +45,15 @@ export default function ClothingPage({
   );
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/login' });
+    router.push('/login');
+  };
+  
   return (
     <section>
-      <Header
-        onSignOut={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
+      <Header onSignOut={handleSignOut} />
       <div className='flex flex-1'>
         <Sidebar
           sizes={['S', 'M', 'L', 'XL']}

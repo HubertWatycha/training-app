@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 body {
-    background-color: black;
+    background-image: url('../public/backgroundTEST.svg')
+}
+
+.dot {
+    @apply h-8 w-8 m-1 p-1 opacity-0 bg-orange-300 rounded-lg animate-ping
 }

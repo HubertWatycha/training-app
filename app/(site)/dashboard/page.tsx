@@ -7,96 +7,99 @@ import Image from 'next/image';
 import Header from '@/app/(components)/header';
 import RemoveButton from '@/app/(components)/removeButton';
 import NoItems from '@/app/(components)/noItems';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import useFetchDashboard from '@/app/(components)/(hooks)/useFetchDashboard';
+import LoadingAnimation from '@/app/(components)/loadingAnimation';
 
-interface Item {
-  id: number;
-  size: number | string;
-  image: string;
-  category: string;
-  price_range: number;
-  color: string;
-}
 const ItemsPerPage = 8;
-
 
 const Dashboard = () => {
   const { data: session } = useSession();
+
+  console.log(session);
+
   const router = useRouter();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
-  console.log('useSession Hook session object', session);
+  const { data: itemsData, isLoading, isFetching } = useFetchDashboard();
 
-  const fetchItems = async (page: number) => {
-    const offset = page * ItemsPerPage;
-    const response = await axios.get(`api/get?offset=${offset}&limit=${ItemsPerPage}`);
-    if (!Array.isArray(response.data)) {
-      return [];
-    }
-    const items = response.data.slice(0, ItemsPerPage);
-    toast.success('Items have been fetched'); 
-    return items;
-  };
-
-  const {
-    isLoading,
-    isError,
-    data: items,
-    isFetching,
-    isPreviousData,
-  } = useQuery({
-    queryKey: ['clothes', page],
-    queryFn: () => fetchItems(page),
-    keepPreviousData: true,
-  });
+  const totalItems = itemsData?.length || 0;
+  const totalPages = Math.ceil(totalItems / ItemsPerPage);
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/login' });
     router.push('/login');
   };
 
+  if (isLoading) {
+    return (
+      <LoadingAnimation/>
+    );
+  }
+
+  if (isFetching) {
+    return (
+      <LoadingAnimation/>
+    );
+  }
+
+  let currentItems: any[] = []; 
+
+  if (Array.isArray(itemsData)) {
+    const startIndex = (page - 1) * ItemsPerPage;
+    const endIndex = startIndex + ItemsPerPage;
+    currentItems = itemsData.slice(startIndex, endIndex);
+  }
+
   return (
     <div>
       <Header onSignOut={handleSignOut} />
 
-      {isLoading ? (
-        <h1>Loading...</h1>
-      ) : isError ? (
-        <NoItems />
-      ) : items && items.length === 0 ? (
+      {totalItems === 0 ? (
         <NoItems />
       ) : (
-        <ul className='grid grid-cols-4 gap-3'>
-          {items?.map((item: Item, index) => (
-            <li
-              key={`${item.id}-${index}`}
-              className='border rounded text-slate-50'
-            >
-              <Image
-                src={item.image}
-                alt={item.category}
-                width='0'
-                height='0'
-                sizes='100vw'
-                className='w-full h-auto'
-              />
-              <p>{item.category}</p>
-              <p>Size: {item.size}</p>
-              <p>Price Range: {item.price_range}</p>
-              <p>Color: {item.color}</p>
-              <RemoveButton itemId={item.id} category={item.category} />
-            </li>
-          ))}
-        </ul>
+        <div>
+          <ul className='grid grid-cols-4 gap-3'>
+            {currentItems.map((item, index) => (
+              <li
+                key={`${item.id}-${index}`}
+                className='border rounded text-slate-50 p-2'>
+                <Image
+                  src={item.image}
+                  alt={item.category}
+                  width='0'
+                  height='0'
+                  sizes='100vw'
+                  className='w-full h-auto'
+                />
+                <p>{item.category}</p>
+                <p>Size: {item.size}</p>
+                <p>Price Range: {item.price_range}</p>
+                <p>Color: {item.color}</p>
+                <RemoveButton itemId={item.id} category={item.category} />
+              </li>
+            ))}
+          </ul>
+          <div className='p-2 flex justify-center'>
+            {Array.from({ length: totalPages }).map((_, pageIndex) => (
+              <button
+                key={pageIndex}
+                onClick={() => setPage(pageIndex + 1)}
+                className={`
+                  text-slate-50 text-2xl p-4 m-1 rounded-lg border-gray-800 border-2
+                  ${page === pageIndex + 1 ? 'active' : ''}
+                  hover:bg-gray-200 hover:text-gray-800
+                `}
+              >
+                {pageIndex + 1}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
       {isFetching ? <p className='text-slate-50'>Loading more...</p> : null}
-      <button onClick={() => setPage(page + 1)} disabled={isPreviousData} className='text-slate-50'>
-        Load More
-      </button>
     </div>
   );
+
 };
 
 export default Dashboard;
