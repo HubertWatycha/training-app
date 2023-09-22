@@ -2,19 +2,19 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { Dispatch, SetStateAction } from 'react';
 
 interface SidebarProps {
-  sizes: (number | string)[];
+  genders: (string)[];
   colors: { value: string; name: string }[];
-  selectedSize: string | number | null;
-  setSelectedSize: Dispatch<SetStateAction<string | number | null>>;
+  selectedGender: string | null;
+  setSelectedGender: Dispatch<SetStateAction<string | null>>;
   selectedColor: string | null;
   setSelectedColor: Dispatch<SetStateAction<string | null>>;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  sizes,
+  genders,
   colors,
-  selectedSize,
-  setSelectedSize,
+  selectedGender,
+  setSelectedGender,
   selectedColor,
   setSelectedColor,
 }) => {
@@ -39,24 +39,43 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  const handleGenderChange = (gender: string) => {
+    if (gender !== null) {
+      console.log('Selected Color:', gender);
+      setSelectedGender(gender);
+
+      const queryKey = [selectedGender];
+
+      queryClient.invalidateQueries(queryKey);
+
+      queryClient.removeQueries(queryKey, {
+        exact: true,
+        predicate: (query) => {
+          const queryGender = query.queryKey[0];
+          return !!queryGender && queryGender !== gender;
+        },
+      });
+    }
+  };
+
   return (
     <div className='flex flex-col p-2 content-center'>
       <div className='mb-4'>
-        <h2 className='text-3xl font-semibold mb-2 text-slate-50'>Sizes</h2>
+        <h2 className='text-3xl font-semibold mb-2 text-slate-50'>Gender</h2>
         <div className='space-y-2'>
-          {sizes.map((size, index) => (
+          {genders.map((gender, index) => (
             <label
               key={index}
               className='flex items-center cursor-pointer text-slate-50'>
               <input
                 type='radio'
                 name='size'
-                value={size}
-                checked={selectedSize === size}
-                onChange={() => setSelectedSize(size)}
+                value={gender || ""}
+                checked={selectedGender === gender}
+                onChange={(e) => handleGenderChange(e.target.value)}
                 className='mr-2'
               />
-              {size}
+              {gender}
             </label>
           ))}
         </div>

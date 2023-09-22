@@ -7,10 +7,12 @@ import { useSession } from 'next-auth/react';
 import ChooseButton from '@/app/(components)/chooseButton';
 import { useQuery } from '@tanstack/react-query';
 import { useClothingContext } from '../layout';
+import toast from 'react-hot-toast';
 
 interface Shoe {
   id: number;
   size: number;
+  gender: string;
   image: string;
   category: string;
   price_range: number;
@@ -18,13 +20,13 @@ interface Shoe {
 }
 
 const Shoes: React.FC = () => {
-  const { selectedColor } = useClothingContext();
+  const { selectedColor, selectedGender } = useClothingContext();
 
   const { data: session } = useSession();
   console.log('useSession Hook session object', session);
 
   const { data: shoes } = useQuery({
-    queryKey: ['shoes', selectedColor],
+    queryKey: ['shoes', selectedColor, selectedGender],
     queryFn: async () => {
       const response = await axios.get('api/shoes/');
       if (!Array.isArray(response.data)) {
@@ -32,16 +34,18 @@ const Shoes: React.FC = () => {
       }
 
       const filteredShoes = response.data.filter((Shoe: Shoe) => {
-        return !selectedColor || Shoe.color === selectedColor;
+        const colorMatch = !selectedColor || Shoe.color === selectedColor;
+        const genderMatch = !selectedGender || Shoe.gender === selectedGender;
+        return colorMatch && genderMatch;
       });
-
+      toast.success('Filtered');
       return filteredShoes;
     },
     staleTime: 0,
   });
 
   return (
-    <section className='bg-black'>
+    <section className=''>
       <ul className='grid grid-cols-4 gap-3'>
         {shoes?.map((Shoe: Shoe) => (
           <li key={Shoe.id} className='border rounded'>

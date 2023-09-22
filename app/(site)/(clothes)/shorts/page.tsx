@@ -42,7 +42,7 @@ const Shorts: React.FC = () => {
   });
 
   return (
-    <section className='bg-black'>
+    <section className=''>
       <ul className='grid grid-cols-4 gap-3'>
         {shorts?.map((Shorts: Short) => (
           <li key={Shorts.id} className='border rounded'>

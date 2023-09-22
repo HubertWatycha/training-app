@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation"
 interface Hoodie {
   id: number;
   size: string;
+  gender: string;
   image: string;
   category: string;
   price_range: number;
@@ -20,14 +21,14 @@ interface Hoodie {
 }
 
 const Hoodies: React.FC = () => {
-  const { selectedColor } = useClothingContext();
+  const { selectedColor, selectedGender } = useClothingContext();
   const router = useRouter()
   const { data: session, status } = useSession();
   console.log('useSession Hook session object', session);
 
 
   const { data: hoodies } = useQuery({
-    queryKey: ['hoodies', selectedColor],
+    queryKey: ['hoodies', selectedColor, selectedGender],
     queryFn: async () => {
       const response = await axios.get('api/hoodies/');
       if (!Array.isArray(response.data)) {
@@ -35,7 +36,9 @@ const Hoodies: React.FC = () => {
       }
 
       const filteredHoodies = response.data.filter((Hoodie: Hoodie) => {
-        return !selectedColor || Hoodie.color === selectedColor;
+        const colorMatch = !selectedColor || Hoodie.color === selectedColor;
+        const genderMatch = !selectedGender || Hoodie.gender === selectedGender;
+        return colorMatch && genderMatch;
       });
       toast.success('Filtered');
       return filteredHoodies;
@@ -50,7 +53,7 @@ const Hoodies: React.FC = () => {
   }
 
   return (
-    <section className='bg-black'>
+    <section className=''>
       <ul className='grid grid-cols-4 gap-2'>
         {hoodies?.map((Hoodie: Hoodie) => (
           <li key={Hoodie.id} className='border rounded'>

@@ -8,8 +8,10 @@ import React, { createContext, useContext, useState } from 'react';
 
 const ClothingContext = createContext<{
   selectedColor: string | null;
+  selectedGender: string | null;
 }>({
   selectedColor: null,
+  selectedGender: null,
 });
 
 export const useClothingContext = () => useContext(ClothingContext);
@@ -40,7 +42,7 @@ export default function ClothingPage({
     { value: 'Brown', name: 'Brown' },
   ];
 
-  const [selectedSize, setSelectedSize] = useState<string | number | null>(
+  const [selectedGender, setSelectedGender] = useState<string | null>(
     null
   );
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -56,14 +58,14 @@ export default function ClothingPage({
       <Header onSignOut={handleSignOut} />
       <div className='flex flex-1'>
         <Sidebar
-          sizes={['S', 'M', 'L', 'XL']}
+          genders={['Male', 'Female']}
           colors={colorOptions}
-          selectedSize={selectedSize}
-          setSelectedSize={setSelectedSize}
+          selectedGender={selectedGender}
+          setSelectedGender={setSelectedGender}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
         />
-        <ClothingContext.Provider value={{ selectedColor }}>
+        <ClothingContext.Provider value={{ selectedColor, selectedGender } }>
           {children}
         </ClothingContext.Provider>
       </div>

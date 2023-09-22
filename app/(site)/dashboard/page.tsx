@@ -53,10 +53,8 @@ const Dashboard = () => {
   return (
     <div>
       <Header onSignOut={handleSignOut} />
-
-      {totalItems === 0 ? (
-        <NoItems />
-      ) : (
+  
+      {totalItems > 0 ? (
         <div>
           <ul className='grid grid-cols-4 gap-3'>
             {currentItems.map((item, index) => (
@@ -79,13 +77,13 @@ const Dashboard = () => {
               </li>
             ))}
           </ul>
-          <div className='p-2 flex justify-center'>
+          <div className='p-2 flex justify-center gap-2'>
             {Array.from({ length: totalPages }).map((_, pageIndex) => (
               <button
                 key={pageIndex}
                 onClick={() => setPage(pageIndex + 1)}
                 className={`
-                  text-slate-50 text-2xl p-4 m-1 rounded-lg border-gray-800 border-2
+                  text-slate-50 text-2xl p-4 rounded-lg border-gray-800 border-2
                   ${page === pageIndex + 1 ? 'active' : ''}
                   hover:bg-gray-200 hover:text-gray-800
                 `}
@@ -95,10 +93,13 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+      ) : (
+        <NoItems />
       )}
       {isFetching ? <p className='text-slate-50'>Loading more...</p> : null}
     </div>
   );
+  
 
 };
 

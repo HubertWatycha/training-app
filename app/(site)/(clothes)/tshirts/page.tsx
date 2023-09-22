@@ -6,10 +6,12 @@ import { useSession } from 'next-auth/react';
 import ChooseButton from '@/app/(components)/chooseButton';
 import { useQuery } from '@tanstack/react-query';
 import { useClothingContext } from '../layout';
+import toast from 'react-hot-toast';
 
 interface TShirt {
   id: number;
   size: string;
+  gender: string;
   image: string;
   category: string;
   price_range: number;
@@ -17,13 +19,13 @@ interface TShirt {
 }
 
 const TShirts = () => {
-  const { selectedColor } = useClothingContext();
+  const { selectedColor, selectedGender } = useClothingContext();
 
   const { data: session } = useSession();
   console.log('useSession Hook session object', session);
 
   const { data: tshirts } = useQuery({
-    queryKey: ['tshirts', selectedColor],
+    queryKey: ['tshirts', selectedColor, selectedGender],
     queryFn: async () => {
       const response = await axios.get('api/tshirts/');
       if (!Array.isArray(response.data)) {
@@ -31,16 +33,18 @@ const TShirts = () => {
       }
 
       const filteredTShirts = response.data.filter((TShirt: TShirt) => {
-        return !selectedColor || TShirt.color === selectedColor;
+        const colorMatch = !selectedColor || TShirt.color === selectedColor;
+        const genderMatch = !selectedGender || TShirt.gender === selectedGender;
+        return colorMatch && genderMatch;
       });
-
+      toast.success('Filtered');
       return filteredTShirts;
     },
     staleTime: 0,
   });
 
   return (
-    <section className='bg-black'>
+    <section className=''>
       <ul className='grid grid-cols-4 gap-3'>
         {tshirts?.map((TShirt: TShirt) => (
           <li key={TShirt.id} className='border rounded'>
