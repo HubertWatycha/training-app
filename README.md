@@ -12,7 +12,9 @@ The CRUD (Create, Read, Update, Delete) application is built using modern web te
 
 - ⚛️ **Front-end Framework**: ![Next.js](https://img.shields.io/badge/Next.js-React%20Framework-000?logo=next.js) is the foundation for building a dynamic and server-rendered React application.
 
-- 💅 **Front-end Technologies**: The front end is developed using React, TypeScript, HTML, CSS, ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-Frontend%20Framework-000?logo=tailwind-css) for responsive and stylish UI components, and ![React Query](https://img.shields.io/badge/React%20Query-Data%20Fetching-000?logo=react-query) for efficient data fetching and management.
+- 💅 **Front-end Technologies**: The front end is developed using ![React](https://img.shields.io/badge/React-Frontend%20Library-000?logo=react), ![TypeScript](https://img.shields.io/badge/TypeScript-Frontend%20Language-000?logo=typescript), ![HTML](https://img.shields.io/badge/HTML-Markup%20Language-000?logo=html5), ![CSS](https://img.shields.io/badge/CSS-Stylesheets-000?logo=css3), and ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-Frontend%20Framework-000?logo=tailwind-css) for responsive and stylish UI components.
+
+- 🔄 **Data Fetching**: ![React Query](https://img.shields.io/badge/React%20Query-Data%20Fetching-000?logo=react-query) is used for efficient data fetching and management.
 
 ## Features
 
