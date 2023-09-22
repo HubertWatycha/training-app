@@ -12,7 +12,7 @@ The CRUD (Create, Read, Update, Delete) application is built using modern web te
 
 - ⚛️ **Front-end Framework**: [Next.js](https://nextjs.org/) is the foundation for building a dynamic and server-rendered React application.
 
-- 💅 **Front-end Technologies**: The front end is developed using React, TypeScript, HTML, CSS, and [Tailwind CSS](https://tailwindcss.com/) for responsive and stylish UI components.
+- 💅 **Front-end Technologies**: The front end is developed using React, TypeScript, HTML, CSS, [Tailwind CSS](https://tailwindcss.com/) for responsive and stylish UI components, and [React Query](https://react-query.tanstack.com/) for efficient data fetching and management.
 
 ## Features
 
@@ -44,4 +44,4 @@ The app can be deployed to a web hosting service or cloud platform of your choic
 
 ## Conclusion
 
-The CRUD application offers an engaging and efficient way for users to manage and explore clothing items. Its blend of modern technologies, including TypeScript, ensures a secure and user-friendly experience, making it an ideal choice for clothing enthusiasts and businesses alike.
+The CRUD application offers an engaging and efficient way for users to manage and explore clothing items. Its blend of modern technologies, including TypeScript and React Query, ensures a secure and user-friendly experience, making it an ideal choice for clothing enthusiasts and businesses alike.
