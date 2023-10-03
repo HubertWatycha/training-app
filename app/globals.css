@@ -7,5 +7,5 @@ body {
 }
 
 .dot {
-    @apply h-8 w-8 m-1 p-1 bg-orange-300 rounded-lg animate-ping
+    @apply h-8 w-8 m-2 p-2 rounded-lg animate-ping
 }
