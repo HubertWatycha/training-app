@@ -1,28 +1,43 @@
-'use client';
-
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 export function ChangeAvatar() {
   const [avatarLink, setAvatarLink] = useState('');
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const onSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-  
+
     try {
-      // Convert the avatarLink to a JSON string
-      const avatarLinkJson = JSON.stringify(avatarLink);
-  
-      const response = await axios.post('/api/change-avatar', avatarLinkJson, {
+      let formData = new FormData();
+
+      if (avatarFile) {
+        formData.append('avatar', avatarFile);
+      } else {
+        formData.append('avatarLink', avatarLink);
+      }
+
+      const response = await axios.post('/api/change-avatar', formData, {
         headers: {
-          'Content-Type': 'application/json', // Set the content type to JSON
+          'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.status === 200) {
         toast.success('Avatar changed successfully');
         setAvatarLink('');
+        setAvatarFile(null);
+        closeModal();
       } else {
         toast.error('Something went wrong');
       }
@@ -31,21 +46,22 @@ export function ChangeAvatar() {
       toast.error('Something went wrong');
     }
   };
-  
 
-  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLinkChange = (e: { target: { value: SetStateAction<string>; }; }) => {
     setAvatarLink(e.target.value);
   };
 
-  return (
-    <form onSubmit={onSubmit}>
-      <input
-        type='text' 
-        placeholder='Enter avatar link'
-        value={avatarLink}
-        onChange={handleLinkChange}
-      />
-      <button type='submit'>Change Avatar</button>
-    </form>
-  );
+  const handleFileChange = (e: { target: { files: any[]; }; }) => {
+    const file = e.target.files[0];
+    setAvatarFile(file);
+  };
+
+  return {
+    isModalOpen,
+    openModal,
+    closeModal,
+    onSubmit,
+    handleLinkChange,
+    handleFileChange,
+  };
 }

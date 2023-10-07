@@ -13,23 +13,42 @@ export async function POST(req: NextRequest) {
   const userId = session.user.id;
 
   try {
-    const avatarLink = JSON.parse(await req.text()); // Parse JSON here
-    
-    // Validate if `avatarLink` is a string (URL) or implement further validation logic
-    if (typeof avatarLink !== 'string') {
-      return new NextResponse('Invalid JSON data', { status: 400 });
+    let avatarValue;
+
+    if (req.files && req.files.avatar) {
+      const avatarFile = req.files.avatar;
+
+      avatarValue = avatarFile.path;
+    } else {
+      const avatarLink = await req.text();
+      
+      if (typeof avatarLink !== 'string') {
+        return new NextResponse('Invalid data', { status: 400 });
+      }
+
+      avatarValue = avatarLink;
     }
 
     await prisma.user.update({
       where: { id: userId },
       data: {
-        image: avatarLink,
+        image: avatarValue,
       },
     });
 
-    return new NextResponse('Avatar has been changed');
+    return new NextResponse(JSON.stringify({ message: 'Avatar has been changed' }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     console.error('Error updating avatar:', error);
-    return NextResponse.json('Invalid JSON data', { status: 400 });
+    return new NextResponse(JSON.stringify({ message: 'Error updating avatar' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 }

@@ -1,7 +1,12 @@
+'use client';
+
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useState } from 'react';
 import Image from 'next/image';
+import { ChangeAvatar } from './changeUserAvatar';
+import { useEffect, useState } from 'react';
+import { BsUpload } from 'react-icons/bs';
+import { AiOutlineClose } from 'react-icons/ai';
 
 interface HeaderProps {
   onSignOut: () => void;
@@ -16,6 +21,17 @@ const Header = ({ onSignOut }: HeaderProps) => {
   const [upperBodyDropdownOpen, setUpperBodyDropdownOpen] = useState(false);
   const [lowerBodyDropdownOpen, setLowerBodyDropdownOpen] = useState(false);
 
+  const {
+    isModalOpen,
+    openModal,
+    closeModal,
+    onSubmit,
+    handleLinkChange,
+    handleFileChange,
+    avatarLink,
+    isAvatarModalOpen,
+  } = ChangeAvatar();
+
   const toggleUpperBodyDropdown = () => {
     setUpperBodyDropdownOpen((prev) => !prev);
   };
@@ -23,6 +39,14 @@ const Header = ({ onSignOut }: HeaderProps) => {
   const toggleLowerBodyDropdown = () => {
     setLowerBodyDropdownOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (isAvatarModalOpen) {
+      document.body.classList.add('blur-md');
+    } else {
+      document.body.classList.remove('blur-md');
+    }
+  }, [isAvatarModalOpen]);
 
   return (
     <header className='mb-3'>
@@ -84,7 +108,7 @@ const Header = ({ onSignOut }: HeaderProps) => {
                       <li className='p-2 hover:bg-gray-700'>
                         <Link href='/tshirts'>T-Shirts</Link>
                       </li>
-                      <li className='p-2 hover:bg-gray-700'>
+                      <li className='p-2 hover-bg-gray-700'>
                         <Link href='/'>Jackets</Link>
                       </li>
                     </ul>
@@ -116,7 +140,7 @@ const Header = ({ onSignOut }: HeaderProps) => {
                       <li className='p-2 hover:bg-gray-700'>
                         <Link href='/'>Belts</Link>
                       </li>
-                      <li className='p-2 hover:bg-gray-700'>
+                      <li className='p-2 hover-bg-gray-700'>
                         <Link href='/'>Socks</Link>
                       </li>
                     </ul>
@@ -134,7 +158,8 @@ const Header = ({ onSignOut }: HeaderProps) => {
                     width={32}
                     height={32}
                     alt={`${userName}'s Avatar`}
-                    className='rounded-full h-8 w-8 mr-2'
+                    className='rounded-full h-8 w-8 mr-2 cursor-pointer'
+                    onClick={openModal}
                   />
                 ) : (
                   <div className='rounded-full h-8 w-8 mr-2 bg-gray-300 dark:bg-gray-700'></div>
@@ -147,6 +172,43 @@ const Header = ({ onSignOut }: HeaderProps) => {
           </div>
         </div>
       </nav>
+
+      {isModalOpen && (
+        <div className='fixed inset-0 z-50 backdrop-blur-lg'>
+          <dialog open className='p-6 bg-gray-800 mt-20 relative'>
+            <button
+              onClick={closeModal}
+              className='absolute top-2 right-2 p-2 text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-full dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800'>
+              <AiOutlineClose size={24} />
+            </button>
+            <form onSubmit={onSubmit}>
+              <div className='flex flex-col items-center'>
+                <input
+                  type='text'
+                  placeholder='Enter avatar link'
+                  value={avatarLink}
+                  onChange={handleLinkChange}
+                  className='w-72 text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 m-2 focus:outline-none focus:ring-2 focus:ring-indigo-400'
+                />
+                <span className='my-2 text-gray-600 dark:text-gray-400'>
+                  or
+                </span>
+                <input
+                  type='file'
+                  accept='image/*'
+                  onChange={handleFileChange}
+                  className='w-72 text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 m-2 focus:outline-none focus:ring-2 focus:ring-indigo-400'
+                />
+              </div>
+              <button
+                type='submit'
+                className='bg-indigo-500 hover:bg-indigo-600 text-white font-medium rounded-lg px-4 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-400'>
+                Change Avatar
+              </button>
+            </form>
+          </dialog>
+        </div>
+      )}
     </header>
   );
 };
