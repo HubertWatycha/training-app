@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -17,22 +17,16 @@ export function ChangeAvatar() {
 
   const onSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-
+  
     try {
-      let formData = new FormData();
-
-      if (avatarFile) {
-        formData.append('avatar', avatarFile);
-      } else {
-        formData.append('avatarLink', avatarLink);
-      }
-
-      const response = await axios.post('/api/change-avatar', formData, {
+      const requestData = avatarFile ? { avatar: avatarFile } : { avatarLink: avatarLink };
+  
+      const response = await axios.post('/api/change-avatar', requestData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json', 
         },
       });
-
+  
       if (response.status === 200) {
         toast.success('Avatar changed successfully');
         setAvatarLink('');
@@ -45,23 +39,30 @@ export function ChangeAvatar() {
       console.error('Error:', error);
       toast.error('Something went wrong');
     }
-  };
+  };;
+  
 
-  const handleLinkChange = (e: { target: { value: SetStateAction<string>; }; }) => {
+  const handleLinkChange = (e: { target: { value: string }; }) => {
     setAvatarLink(e.target.value);
   };
+  
 
   const handleFileChange = (e: { target: { files: any[]; }; }) => {
     const file = e.target.files[0];
     setAvatarFile(file);
+
   };
+
 
   return {
     isModalOpen,
     openModal,
     closeModal,
     onSubmit,
+    avatarLink,
     handleLinkChange,
     handleFileChange,
   };
 }
+
+

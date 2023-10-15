@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    background-image: url('../public/backgroundTEST.svg')
+    background-color: #F4F5F4;
 }
 
 .dot {

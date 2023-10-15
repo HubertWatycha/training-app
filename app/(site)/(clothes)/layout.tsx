@@ -5,6 +5,7 @@ import Sidebar from '@/app/(components)/sidebar';
 import { signOut } from 'next-auth/react';
 import router from 'next/navigation';
 import React, { createContext, useContext, useState } from 'react';
+import Footer from '@/app/(components)/footer';
 
 const ClothingContext = createContext<{
   selectedColor: string | null;
@@ -69,6 +70,7 @@ export default function ClothingPage({
           {children}
         </ClothingContext.Provider>
       </div>
+      <Footer/>
     </section>
   );
 }

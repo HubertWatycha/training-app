@@ -15,18 +15,24 @@ export async function POST(req: NextRequest) {
   try {
     let avatarValue;
 
-    if (req.files && req.files.avatar) {
-      const avatarFile = req.files.avatar;
+    switch (true) {
+      case !!req.body && !!req.body.avatar:
+        const avatarFile = req.body.avatar;
 
-      avatarValue = avatarFile.path;
-    } else {
-      const avatarLink = await req.text();
-      
-      if (typeof avatarLink !== 'string') {
+        break;
+
+      case !!req.body && !!req.body.avatarLink:
+        const avatarLink = req.body.avatarLink;
+
+        if (typeof avatarLink !== 'string') {
+          return new NextResponse('Invalid data', { status: 400 });
+        }
+
+        avatarValue = avatarLink;
+        break;
+
+      default:
         return new NextResponse('Invalid data', { status: 400 });
-      }
-
-      avatarValue = avatarLink;
     }
 
     await prisma.user.update({

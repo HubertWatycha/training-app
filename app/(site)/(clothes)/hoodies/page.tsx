@@ -53,7 +53,7 @@ const Hoodies: React.FC = () => {
   }
 
   return (
-    <section className=''>
+    <section className='my-3'>
       <ul className='grid grid-cols-4 gap-2'>
         {hoodies?.map((Hoodie: Hoodie) => (
           <li key={Hoodie.id} className='border rounded'>

@@ -1,8 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
-  genders: (string)[];
+  genders: string[];
   colors: { value: string; name: string }[];
   selectedGender: string | null;
   setSelectedGender: Dispatch<SetStateAction<string | null>>;
@@ -18,7 +20,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedColor,
   setSelectedColor,
 }) => {
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const color = searchParams.get('color');
+    const gender = searchParams.get('gender');
+    setSelectedColor(color);
+    setSelectedGender(gender);
+  }, [searchParams, setSelectedColor, setSelectedGender]);
 
   const handleColorChange = (color: string) => {
     if (color !== null) {
@@ -36,6 +47,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           return !!queryColor && queryColor !== color;
         },
       });
+      const newSearchParams = new URLSearchParams();
+      if (selectedGender) {
+        newSearchParams.set('gender', selectedGender);
+      }
+      newSearchParams.set('color', color);
+
+      router.push(`?${newSearchParams.toString()}`);
     }
   };
 
@@ -55,13 +73,20 @@ const Sidebar: React.FC<SidebarProps> = ({
           return !!queryGender && queryGender !== gender;
         },
       });
+      const newSearchParams = new URLSearchParams();
+      if (selectedColor) {
+        newSearchParams.set('color', selectedColor);
+      }
+      newSearchParams.set('gender', gender);
+
+      router.push(`?${newSearchParams.toString()}`);
     }
   };
 
   return (
-    <div className='flex flex-col p-2 content-center'>
+    <div className='flex flex-col p-2 content-center bg-background my-3 mr-3'>
       <div className='mb-4'>
-        <h2 className='text-3xl font-semibold mb-2 text-slate-50'>Gender</h2>
+        <h2 className='font-bold mb-2 text-text'>Gender</h2>
         <div className='space-y-2'>
           {genders.map((gender, index) => (
             <label
@@ -70,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <input
                 type='radio'
                 name='size'
-                value={gender || ""}
+                value={gender || ''}
                 checked={selectedGender === gender}
                 onChange={(e) => handleGenderChange(e.target.value)}
                 className='mr-2'
@@ -81,11 +106,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
       <div>
-        <h2 className='text-3xl font-semibold mb-2 text-slate-50'>Colors</h2>
+        <h2 className='font-bold mb-2 text-text'>Colors</h2>
         <select
           value={selectedColor || ''}
           onChange={(e) => handleColorChange(e.target.value)}
-          className='w-full p-2 bg-gray-800 border border-gray-700 text-slate-50 rounded-md'>
+          className='w-full p-2 bg-gray-800 border border-gray-700 text-text rounded-md'>
           <option value=''>Select a color</option>
           {colors.map((colorOption, index) => (
             <option key={index} value={colorOption.value}>
